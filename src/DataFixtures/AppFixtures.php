@@ -4,11 +4,28 @@ namespace App\DataFixtures;
 
 use App\Entity\City;
 use App\Entity\Flight;
-use Doctrine\Bundle\FixturesBundle\Fixture;
+use App\Services\FlightService;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 
 class AppFixtures extends Fixture
 {
+    private $flightService;
+    /**
+     * On injecte un service dans le constructeur
+     *
+     * @param FlightService $fs
+     */
+
+    function __construct(FlightService $fs)
+    {
+        $this->flightService = $fs;
+    }
+    
+    /** Pemert d'alimenter la base de données avec
+     * - 13 enregistrements de villes 
+     * - 1 enregistrement de vol */
+
     public function load(ObjectManager $manager)
     {
         // $product = new Product();
@@ -23,22 +40,26 @@ class AppFixtures extends Fixture
             $city->setName($name);
             $tabObjCity[] = $city;
             $manager->persist($city);
-            $manager->flush();
         }
 
         /***---------------------------------------------------
          *                      UN VOL
           -----------------------------------------------------*/
-
+            for($i = 0; $i<5; $i++) :
             $flight = new Flight;
             $flight
-                    ->setFlightNumber('AA7777')
+                    ->setFlightNumber($this->flightService->getFlightNumber())
                     ->setSchedule(\DateTime::createFromFormat('H:i', '08:00'))
-                    ->setPrice(210)
+                    ->setPrice(mt_rand(100,200))
+                    ->setSeat(mt_rand(1,50))
                     ->setReduction(false)
-                    ->setDeparture($tabObjCity[0])
-                    ->setArrival($tabObjCity[4]);
+                    ->setDeparture($tabObjCity[$i])
+                    ->setArrival($tabObjCity[$i+1]);
                 $manager->persist(($flight));
+            endfor;
+
+            $manager->flush();
 
         }
     }
+

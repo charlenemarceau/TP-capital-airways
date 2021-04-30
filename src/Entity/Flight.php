@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\FlightRepository;
+use App\Entity\City;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\FlightRepository;
 
 /**
  * @ORM\Entity(repositoryClass=FlightRepository::class)
@@ -19,6 +21,7 @@ class Flight
 
     /**
      * @ORM\Column(type="string", length=45)
+     * 
      */
     private $flightNumber;
 
@@ -29,6 +32,12 @@ class Flight
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\NotBlank(message = "Entrez un prix entre 100€ et 300€")
+     * @Assert\Range(
+     *      min=100,
+     *      max=300,
+     *      minMessage = "Au minimum 100€",
+     *      maxMessage = "Au minimum 300€")
      */
     private $price;
 
@@ -38,8 +47,11 @@ class Flight
     private $reduction;
 
     /**
-     * @ORM\ManyToOne(targetEntity=City::class, inversedBy="departure")
+     * @ORM\ManyToOne(targetEntity=City::class, inversedBy="flights")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotEqualTo(
+     *                  propertyPath="arrival",
+     *                  message="Le départ et l'arrivée doivent être différents")
      */
     private $departure;
 
@@ -48,6 +60,18 @@ class Flight
      * @ORM\JoinColumn(nullable=false)
      */
     private $arrival;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\NotBlank(message = "Entrez un nombre de siège(s) disponible(s) entre 1 et 50")
+     * @Assert\Range(
+     *      min=1,
+     *      max=50,
+     *      minMessage = "Au minimum 1",
+     *      maxMessage = "Au minimum 50")
+     */
+    private $seat;
+
 
     public function getId(): ?int
     {
@@ -125,4 +149,18 @@ class Flight
 
         return $this;
     }
+
+    public function getSeat(): ?int
+    {
+        return $this->seat;
+    }
+
+    public function setSeat(?int $seat): self
+    {
+        $this->seat = $seat;
+
+        return $this;
+    }
+
+
 }

@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Capital Airways{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+    <h1 class="text-center mt-3">Capital Airways</h1>
+        <div class="row justify-content-center">
+            <div class="col-12">
+    <div class="text-center mt-5 "><a href="{{ path('flight_new') }}" class="btn btn-danger">Nouveau vol</a></div>
+    <table class="table table-success table-striped table-hover mt-5">
+        <thead>
+            <tr>
+                <th>Numéro de vol</th>
+                <th>Heure de départ</th>
+                <th>Prix</th>
+                <th>Réduction</th>
+                <th>Départ</th>
+                <th>Arrivé</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for flight in flights %}
+            <tr>
+                <td>{{ flight.flightNumber }}</td>
+                <td>{{ flight.schedule ? flight.schedule|date('H:i:s') : '' }}</td>
+                <td>{{ flight.price }}</td>
+                <td>{{ flight.reduction ? 'Oui' : 'Non' }}</td>
+                <td>{{ flight.departure.name }}</td>
+                <td>{{ flight.arrival.name }}</td>
+                <td>
+                    <a href="{{ path('flight_show', {'id': flight.id}) }}" class="btn btn-info">Détails</a>
+                    <a href="{{ path('flight_edit', {'id': flight.id}) }}" class="btn btn-success">Editer</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

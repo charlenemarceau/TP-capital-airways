@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Flight{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+    <h1 class="text-center mt-3">Plus de détails sur le vol {{ flight.id }}, {{ flight.flightNumber }}</h1>
+        <div class="row justify-content-center">
+            <div class="col-8">
+    <table class="table table-info table-striped table-hover mt-5">
+        <tbody>
+            {# <tr>
+                <th>Id</th>
+                <td>{{ flight.id }}</td>
+            </tr> #}
+            <tr>
+                <th>Numéro de vol</th>
+                <td>{{ flight.flightNumber }}</td>
+            </tr>
+            <tr>
+                <th>Heure de départ</th>
+                <td>{{ flight.schedule ? flight.schedule|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Prix</th>
+                <td>{{ flight.price }}</td>
+            </tr>
+            <tr>
+                <th>Réduction</th>
+                <td>{{ flight.reduction ? 'Oui' : 'Non' }}</td>
+            </tr>
+            <tr>
+                <th>Sièges restant</th>
+                <td>{{ flight.seat }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="text-center"><a href="{{ path('flight_index') }}" class="btn btn-warning" >Retour à la liste</a>
+    <a href="{{ path('flight_edit', {'id': flight.id}) }}" class="btn btn-success">Editer</a>
+    <br>
+    <div class="mt-5">{{ include('flight/_delete_form.html.twig') }}</div></div>
+            </div> 
+        </div>
+        
+    </div>
+
+{% endblock %}
