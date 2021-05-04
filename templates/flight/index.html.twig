@@ -15,7 +15,6 @@
                 <th>Numéro de vol</th>
                 <th>Heure de départ</th>
                 <th>Prix</th>
-                <th>Réduction</th>
                 <th>Départ</th>
                 <th>Arrivé</th>
             </tr>
@@ -25,13 +24,18 @@
             <tr>
                 <td>{{ flight.flightNumber }}</td>
                 <td>{{ flight.schedule ? flight.schedule|date('H:i:s') : '' }}</td>
-                <td>{{ flight.price }}</td>
-                <td>{{ flight.reduction ? 'Oui' : 'Non' }}</td>
+                {% if flight.reduction %}
+                    <td class='promo'> {{ flight.price - flight.price *10/100 }} €</td>
+                {% else %}
+                    <td>{{ flight.price }}</td>
+                {% endif %}
                 <td>{{ flight.departure.name }}</td>
                 <td>{{ flight.arrival.name }}</td>
                 <td>
                     <a href="{{ path('flight_show', {'id': flight.id}) }}" class="btn btn-info">Détails</a>
+                    {% if is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('flight_edit', {'id': flight.id}) }}" class="btn btn-success">Editer</a>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}

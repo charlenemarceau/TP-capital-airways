@@ -164,3 +164,117 @@ Ajouter Bootstrap pour les page, le thème formulaire.
       ->setFlightNumber($this->flightService->getFlightNumber())
 ``` 
 
+# La sécurité
+
+# Entité User
+```bash 
+symfony console make:user
+#en retour
+ created: src/Entity/User.php
+ created: src/Repository/UserRepository.php
+ updated: src/Entity/User.php
+ updated: config/packages/security.yaml
+ ```
+
+ ## Update User
+ On va ajouter un attribut $firstname et on refait une migration
+ __NB__ La commande est :
+
+ ```bash
+ symfony console make:entity User
+ ```
+
+ ## Migrations 
+ Voir dans la database.
+> on ajoutera surement un champ supplémentaire pour un username
+
+## Système Guard 
+### Authentification et Autorisation
+1. L'authentification impose un contrôle des identifications (email, password)  appelés dans le jargon : `credentials`
+2. L'autorisation esdt relative au rôle donné à un utilisateur qui va limiter l'utilisation de l'application.
+```bash 
+symfony console make:auth
+![ScreenShot](makeauth.png)
+## réponse :
+created: src/Security/LoginFormAuthenticator.php
+ updated: config/packages/security.yaml
+ created: src/Controller/SecurityController.php
+ created: templates/security/login.html.twig
+
+```
+
+## test avec l'url 
+```bash
+http://localhost:8000/login
+```
+## Fixtures
+On crée 2 utilisateurs. 
+1. Admin a besoin que l'on injecte dans la méthode \_\_construct, le service 
+   ```php
+     function \_\_construct(FlightService $fs, UserPasswordEncoderInterface $passwordEncoder)
+   ```
+
+
+2. User
+
+# Navbar 
+- 2 liens : Accueil et logout
+
+# Routes
+
+dans SecurityController, on applique une route par défaut.
+Tout utilisateur arrive de ce fait par le formulaire.
+
+```php
+class SecurityController extends AbstractController
+{
+    /**
+     * @Route("/", name="app_login")
+     */
+    public function login(AuthenticationUtils $authenticationUtils): Response
+``` 
+
+La classe LoginFormAuthenticator gère en suite l'accès à la page désirée dans la méthode `onAuthentificationSuccess()`
+
+```php
+public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
+    {
+        if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
+            return new RedirectResponse($targetPath);
+        }
+
+        return new RedirectResponse($this->urlGenerator->generate('flight_index'));
+
+        // throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+    }
+```
+
+## Protection des routes et access
+voir : https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html
+
+## FlightController et IsGranted annotations
+
+On peut déjà commencer à filtrer les utilisateurs avec : 
+ ```php
+ /**
+ * @IsGranted ("ROLE_USER")
+ */
+class FlightController extends AbstractController
+``` 
+
+## Filtrer dans les vues
+Filtrer les autorisations dans les vues.
+Ici les éditions n'est accordé qu'au User ayant pour rôle Admin.
+
+```php
+ <td>
+    <a href="{{ path('flight_show', {'id': flight.id}) }}" class="btn btn-info">Détails</a>
+    {% if is_granted('ROLE_ADMIN') %}
+    <a href="{{ path('flight_edit', {'id': flight.id}) }}" class="btn btn-success">Editer</a>
+    {% endif %}
+</td>
+```
+
+# Customize les pages d'erreurs 
+- Doc : https://symfony.com/doc/current/controller/error_pages.html
+- Tester : on ne peut tester en mode dev qu'en passant par l'url de cette manière : `http://localhost:8000/_error/404`

@@ -4,16 +4,18 @@ namespace App\Controller;
 
 use App\Entity\Flight;
 use App\Form\FlightType;
-use App\Repository\FlightRepository;
 use App\Services\FlightService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\FlightRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * @Route("/flight")
+ * @IsGranted ("ROLE_USER")
+ * @Route("/Flight")
  */
 class FlightController extends AbstractController
 {
@@ -66,6 +68,7 @@ class FlightController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("/{id}/edit", name="flight_edit", methods={"GET","POST"})
      */
     public function edit(Request $request, Flight $flight): Response
@@ -92,6 +95,7 @@ class FlightController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("/{id}", name="flight_delete", methods={"POST"})
      */
     public function delete(Request $request, Flight $flight): Response

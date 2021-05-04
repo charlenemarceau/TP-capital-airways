@@ -4,12 +4,15 @@ namespace App\DataFixtures;
 
 use App\Entity\City;
 use App\Entity\Flight;
+use App\Entity\User;
 use App\Services\FlightService;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
+    private $passwordEncoder;
     private $flightService;
     /**
      * On injecte un service dans le constructeur
@@ -17,9 +20,10 @@ class AppFixtures extends Fixture
      * @param FlightService $fs
      */
 
-    function __construct(FlightService $fs)
+    function __construct(FlightService $fs, UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->flightService = $fs;
+        $this->passwordEncoder = $passwordEncoder;
     }
     
     /** Pemert d'alimenter la base de données avec
@@ -43,7 +47,7 @@ class AppFixtures extends Fixture
         }
 
         /***---------------------------------------------------
-         *                      UN VOL
+         *                      5 VOLS
           -----------------------------------------------------*/
             for($i = 0; $i<5; $i++) :
             $flight = new Flight;
@@ -58,8 +62,33 @@ class AppFixtures extends Fixture
                 $manager->persist(($flight));
             endfor;
 
-            $manager->flush();
+            // $manager->flush();
 
+            /***---------------------------------------------------
+                 *                     2  USER
+                  -----------------------------------------------------*/
+        
+
+                $admin = new User;
+                $pwdcripted = $this->passwordEncoder->encodePassword($admin, 'secret1');
+                $admin 
+                    -> setEmail('admin@airways.fr')
+                    -> setFirstname('Julien')
+                    -> setRoles(['ROLE_ADMIN'])
+                    -> setPassword($pwdcripted);
+                $manager->persist($admin);
+
+
+                $user = new User;
+                $pwdcripted = $this->passwordEncoder->encodePassword($user, 'secret2');
+                $user
+                    -> setEmail('lucie@hotmail.fr')
+                    -> setFirstname('Lucie')
+                    -> setRoles(['ROLE_USER'])
+                    -> setPassword($pwdcripted);
+                $manager->persist($user);
+
+
+                $manager->flush();
         }
     }
-

@@ -23,13 +23,12 @@
                 <td>{{ flight.schedule ? flight.schedule|date('H:i:s') : '' }}</td>
             </tr>
             <tr>
-                <th>Prix</th>
+            {% if flight.reduction %}
+                <th class='promo'>Promo</th>
+                <th class='promo'> {{ flight.price - flight.price *10/100 }} €</th>
+                {% else %}
                 <td>{{ flight.price }}</td>
-            </tr>
-            <tr>
-                <th>Réduction</th>
-                <td>{{ flight.reduction ? 'Oui' : 'Non' }}</td>
-            </tr>
+                {% endif %}
             <tr>
                 <th>Sièges restant</th>
                 <td>{{ flight.seat }}</td>
@@ -38,7 +37,9 @@
     </table>
 
     <div class="text-center"><a href="{{ path('flight_index') }}" class="btn btn-warning" >Retour à la liste</a>
+    {% if is_granted('ROLE_ADMIN') %}
     <a href="{{ path('flight_edit', {'id': flight.id}) }}" class="btn btn-success">Editer</a>
+    {% endif %}
     <br>
     <div class="mt-5">{{ include('flight/_delete_form.html.twig') }}</div></div>
             </div> 

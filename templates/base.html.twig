@@ -7,13 +7,21 @@
            and uncomment the following Encore helpers to start using Symfony UX #}
         {% block stylesheets %}
              <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
+             <link rel="stylesheet" href="{{asset('css/style.css')}}">
         {% endblock %}
+
+        
 
         {% block javascripts %}
             {#{{ encore_entry_script_tags('app') }}#}
         {% endblock %}
     </head>
     <body>
+        {% block navbar %}
+            {% include '_navbar.html.twig' %}
+        {% endblock %}
+
+        
         {% block body %}{% endblock %}
     </body>
 </html>
